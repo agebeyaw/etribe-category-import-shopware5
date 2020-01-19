@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+// console.php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use App\Command\CategoryImportCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+$dotenv->load( __DIR__ . '/.env' );
+
+$application = new Application();
+
+// ... register commands
+$application->add( new CategoryImportCommand() );
+
+$application->run();

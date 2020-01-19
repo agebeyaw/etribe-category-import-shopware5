@@ -1,0 +1,31 @@
+[
+  {
+    "title": "Introduction into Computer Science",
+    "product_line_area": "Microsoft"
+  },
+  {
+    "title": "Introduction into Computer Science",
+    "product_line_area": "Microsoft"
+  },
+  {
+    "title": "Introduction into Networks",
+    "product_line_area": "Cisco"
+  },
+  {
+    "title": "Einführung in die OOP",
+    "lang": "de",
+    "product_line_area": "Coding Academy"
+  },
+  {
+    "title": "Introduction into Engineering",
+    "product_line_area": "Microsoft"
+  },
+  {
+    "title": "Introduction into Computer Science",
+    "product_line_area": "Cisco"
+  },
+  {
+    "title": "Introduction into Databases",
+    "product_line_area": "Netapp"
+  }
+]
