@@ -10,7 +10,7 @@ It utilizes the [Shopware 5 category REST API](https://developers.shopware.com/d
 - Symfony/Console
 
 ### Installation
-* Clone this repo [here](https://github.com/philipszdavido/php-console-app-using-symfony).
+* Clone this repo [here](https://github.com/agebeyaw/etribe-category-import-shopware5).
 * cd `etribe-category-import-shopware5`
 * Run `composer install`
 
