@@ -18,7 +18,7 @@ It utilizes the [Shopware 5 category REST API](https://developers.shopware.com/d
 * Run `cp .env-dist .env`
 * Edit your .env file to point to your Shopware5 instance API
 
-Note: It is assumed that the instance already have the main categories associated to the two language shops.
+**Note:** _It is assumed that the instance already have the main categories associated to the two language shops. Please specify the IDs of the main categories for each language shop in the `.env`_
   
 ### Using the app
 
