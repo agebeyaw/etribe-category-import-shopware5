@@ -21,8 +21,20 @@ class CategoryImportCommand extends Command {
 	const LANG_DE = 'de';
 	const LANG_EN = 'en';
 
-	// the name of the command (the part after "./console")
+	/**
+	 * @var ApiClient
+	 */
+	private $api_client;
+
+	/**
+	 * the name of the command (the part after "./console")
+	 */
 	protected static $defaultName = 'etribe:import-categories';
+
+	public function __construct( string $name = null ) {
+		$this->api_client = ApiClient::init();
+		parent::__construct( $name );
+	}
 
 	protected function configure() {
 		$this->addOption(
@@ -34,6 +46,12 @@ class CategoryImportCommand extends Command {
 		);
 	}
 
+	/**
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int
+	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 
 		/**
@@ -58,24 +76,7 @@ class CategoryImportCommand extends Command {
 				$shop_main_cat_id = $lang == self::LANG_DE ? $_ENV['DE_SHOP_CAT_ID'] : $_ENV['EN_SHOP_CAT_ID'];
 				print "\nWorking on language shop {$lang}...";
 
-				foreach ( $shop_categories as $product_line_area_name => $titles ) { //line areas
-					$product_line_area_cat_id = $this->createCategory( $product_line_area_name, $shop_main_cat_id );
-
-					if ( ! empty( $product_line_area_cat_id ) ) {
-						print "\n\tCreated product line category {$product_line_area_name} with id {$product_line_area_cat_id}";
-						foreach ( array_unique( $titles ) as $title ) { //courses
-							$title_cat_id = $this->createCategory( $title, $product_line_area_cat_id );
-
-							if ( ! empty( $title_cat_id ) ) {
-								print "\n\t\tSuccessfully create title category {$title} with id {$title_cat_id}";
-							} else {
-								print "\n\t\tFailed to create title category {$title}";
-							}
-						}
-					} else {
-						print "\n\tFailed to create title category {$product_line_area_name}";
-					}
-				}
+				$this->createShopCategories( $shop_categories, $shop_main_cat_id );
 			}
 		} catch ( \Exception $e ) {
 			print "\An error has occurred {$e->getMessage()}";
@@ -93,11 +94,21 @@ class CategoryImportCommand extends Command {
 	 *
 	 * Under each language category, there will be product_line_area and under it will be the category given as `title`
 	 *
+	 *   'en'=> [
+	 *      'line area 1'=> [
+	 *          'course 1',
+	 *          'course 2',
+	 *      ],
+	 *      ...
+	 *  ]
+	 *  ...
+	 *
+	 *
 	 * @param array $categories
 	 *
 	 * @return array
 	 */
-	private function groupCategories( $categories ) {
+	private function groupCategories( array $categories ): array {
 		$grouped_categories = [];
 		foreach ( $categories as $category ) {
 			$lang                                                            = $category['lang'] ?? self::LANG_EN;
@@ -109,6 +120,23 @@ class CategoryImportCommand extends Command {
 
 
 	/**
+	 * @param array $shop_categories
+	 * @param int   $shop_main_cat_id
+	 *
+	 * @throws \Exception
+	 */
+	protected function createShopCategories( array $shop_categories, int $shop_main_cat_id ) {
+		foreach ( $shop_categories as $product_line_area_name => $titles ) { //line areas
+			$product_line_area_cat_id = $this->createCategory( $product_line_area_name, $shop_main_cat_id );
+			if ( ! empty( $product_line_area_cat_id ) ) {
+				foreach ( array_unique( $titles ) as $title ) { //courses
+					$this->createCategory( $title, $product_line_area_cat_id );
+				}
+			}
+		}
+	}
+
+	/**
 	 * Makes the create category API call and returns result
 	 *
 	 * @param string $name
@@ -117,8 +145,8 @@ class CategoryImportCommand extends Command {
 	 * @return bool|int
 	 * @throws \Exception
 	 */
-	private function createCategory( $name, $parent_id ) {
-		$result = ApiClient::init()->post( 'categories', [
+	private function createCategory( string $name, int $parent_id ) {
+		$result = $this->api_client->post( 'categories', [
 			'name'     => $name,
 			'parentId' => $parent_id,
 		] );
